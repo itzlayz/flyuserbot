@@ -15,7 +15,7 @@ from database.database import Database
 from utils.git import version
 from utils.loader import owner
 from utils.misc import modules
-from .utils import prefixes, help_manager, loader
+from .utils import prefixes, loader
 
 
 @Client.on_message(
@@ -29,9 +29,9 @@ async def load_cmd(Client, message: Message):
     reply = message.reply_to_message
     file = message if message.document else reply if reply and reply.document else None
     check_code = (
-        False 
-        if "-nc" in message.command 
-        or "--no-check" in message.command else 
+        False
+        if "-nc" in message.command
+        or "--no-check" in message.command else
         True
     )
 

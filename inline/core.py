@@ -19,14 +19,26 @@ import asyncio
 
 class Inline:
     def __init__(self):
-        self.bot: Bot = None
-        self.dispatcher: Dispatcher = None
+        """
+        Initializes the inline bot manager.
+        """
+        self.bot = None
+        self.dispatcher = None
         self.errors_text = ["Sorry.", "That I cannot do.", "too many attempts"]
 
     async def create(self, client: Client, botfather: str = "@BotFather") -> str:
-        id = "".join(
-            random.choice(string.ascii_letters + string.digits) for _ in range(5)
-        )
+        """
+        Creates a new inline bot.
+
+        Args:
+            client (Client): The Telegram client instance.
+            botfather (str, optional): The BotFather username. Defaults to "@BotFather".
+
+        Returns:
+            str: The bot token.
+        """
+        id = "".join(random.choice(string.ascii_letters + string.digits)
+                     for _ in range(5))
         me = await client.get_me()
         username = f"flyTG_{id}_bot"
         display_name = f"🕊 Fly-telegram of {me.first_name}"
@@ -49,11 +61,9 @@ class Inline:
                 try:
                     await conv.send(message)
                     response = await conv.response(limit=2)
-
                     match = re.search(pattern, response.text)
                     if match:
                         token = match.group(1)
-
                     if any(error in response.text for error in self.errors_text):
                         return False
                 except errors.UserIsBlocked:
@@ -65,20 +75,22 @@ class Inline:
         return token
 
     async def load(self, client: Client):
-        token = db.get("inline_token")
+        """
+        Loads the inline bot.
 
+        Args:
+            client (pyrogram.Client): The Telegram client instance.
+        """
+        token = db.get("inline_token")
         if not token:
             token = await self.create(client)
             db.set("inline_token", token)
-            db.save()
 
         try:
-            self.bot = Bot(
-                token=token, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-            )
+            self.bot = Bot(token=token, default=DefaultBotProperties(
+                parse_mode=ParseMode.HTML))
         except TelegramUnauthorizedError:
             db.set("inline_token", "")
-            db.save()
             return
 
         self.dispatcher = Dispatcher()
@@ -87,8 +99,5 @@ class Inline:
         me = await client.get_me()
         await self.bot.send_message(me.id, "🕊 <b>Fly-telegram userbot is loaded!</b>")
 
-        asyncio.ensure_future(
-            self.dispatcher.start_polling(
-                self.bot, skip_updates=True, handle_signals=False
-            )
-        )
+        asyncio.ensure_future(self.dispatcher.start_polling(
+            self.bot, skip_updates=True, handle_signals=False))

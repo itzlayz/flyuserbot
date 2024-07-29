@@ -11,7 +11,7 @@ import os
 from utils import loader
 from utils.git import repo, origin, version, check_update
 from utils.misc import uptime, ram
-from .utils import prefixes, db, text
+from .utils import prefixes, db, text, account
 
 
 @Client.on_message(filters.command("restart", prefixes=prefixes) & loader.owner)
@@ -24,7 +24,6 @@ async def restart_cmd(Client, message: Message):
             "text": "🕊 <b>Restarted!</b>",
         },
     )
-    db.save()
 
     await message.edit("🕊 <b>Restarting...</b>")
     os.execl(sys.executable, sys.executable, "main.py")
@@ -64,11 +63,10 @@ async def addprefix_cmd(Client, message: Message):
     prefix = message.command[1].lower()
     prefixes.append(prefix)
     account.set("prefixes", prefixes)
-    account.save()
 
     await message.edit(
         f"🕊 <b>added new prefix: {prefix}</b>\n"
-        f"<code>prefixes: {' | '.join(prefixes)}</code>"
+        f"<code>prefixes: {' '.join(prefixes)}</code>"
     )
 
 
@@ -89,9 +87,9 @@ async def info_cmd(client: Client, message: Message):
     )
 
     await message.delete()
-    await client.send_photo(
+    await client.send_animation(
         chat_id=message.chat.id,
-        photo="./assets/logo.jpg",
+        animation="./assets/logo.gif",
         caption=text.format(
             owner=owner,
             version=userbot_version,

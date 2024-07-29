@@ -4,7 +4,18 @@
 import argparse
 
 
-def parse() -> dict:
+def parse() -> argparse.Namespace:
+    """
+    Parses command-line arguments using argparse.
+
+    Returns:
+        argparse.Namespace: A namespace containing the parsed arguments.
+
+    The function defines two command-line arguments:
+
+    * `--session-string`: Allows starting a userbot via a session string.
+    * `--no-logo`: Disables the logo in the console.
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -21,5 +32,4 @@ def parse() -> dict:
         help="Disables the logo in the console.",
     )
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
